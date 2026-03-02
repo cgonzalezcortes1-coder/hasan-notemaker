@@ -309,6 +309,27 @@ textarea:focus { border-color: var(--amber); }
 .clock-hint { font-size: 11px; color: var(--fg2); font-family: var(--mono); margin-left: auto; text-align: right; }
 @media (max-width: 480px) { .clock-hint { width: 100%; margin-left: 0; margin-top: 6px; } }
 
+/* Sync wrap */
+.sync-wrap {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.sync-label { font-family: var(--mono); font-size: 10px; color: var(--fg2); text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; }
+.sync-wrap input {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
+  color: var(--fg); font-family: var(--mono); font-size: 14px;
+  padding: 7px 10px; outline: none; width: 110px; transition: border-color 0.15s;
+}
+.sync-wrap input:focus { border-color: var(--amber); }
+.btn-sync {
+  background: #2a2a2a; color: var(--fg2); border: 1px solid var(--border);
+  border-radius: 3px; font-family: var(--mono); font-size: 11px; font-weight: 500;
+  padding: 7px 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-sync:hover { color: var(--fg); border-color: #555; }
+.btn-sync.synced { background: var(--green); color: #000; border-color: var(--green); }
+.sync-status { font-family: var(--mono); font-size: 11px; color: var(--fg2); }
+
 /* Input de nota */
 .note-input-wrap {
   padding: 12px 16px; border-bottom: 1px solid var(--border);
@@ -423,6 +444,12 @@ textarea:focus { border-color: var(--amber); }
       <button class="btn btn-ghost" id="btn-stop" onclick="stopClock()" disabled>■ Stop</button>
       <button class="btn btn-ghost" id="btn-reset" onclick="resetClock()">↺ Reset</button>
       <span class="clock-hint" id="clock-hint">Configura el TC y dale Start</span>
+    </div>
+    <div class="sync-wrap">
+      <span class="sync-label">Sync con PT</span>
+      <input type="text" id="sync-input" placeholder="01:05:32" maxlength="11">
+      <button class="btn-sync" id="btn-sync" onclick="syncTC()">⟳ Sync</button>
+      <span class="sync-status" id="sync-status"></span>
     </div>
     <div class="note-input-wrap">
       <button class="btn-capture" id="btn-capture" onclick="captureTC()" disabled>⏱ Capturar TC</button>
@@ -587,6 +614,37 @@ function resetClock() {
   document.getElementById('clock').textContent = msToTC(getStartOffsetMs());
   document.getElementById('clock').className   = 'clock-display stopped';
   document.getElementById('clock-hint').textContent = 'Configura el TC y dale Start';
+  document.getElementById('sync-status').textContent = '';
+}
+
+function syncTC() {
+  const val   = document.getElementById('sync-input').value.trim();
+  if (!val) { alert('Escribe el TC de PT antes de sincronizar.'); return; }
+  // Parsear HH:MM:SS o MM:SS
+  const parts = val.split(/[:;]/);
+  let h=0, m=0, s=0;
+  if (parts.length >= 3) { h=parseInt(parts[0]); m=parseInt(parts[1]); s=parseInt(parts[2]); }
+  else if (parts.length === 2) { m=parseInt(parts[0]); s=parseInt(parts[1]); }
+  else { alert('Formato inválido. Usa HH:MM:SS o MM:SS'); return; }
+
+  const syncTcMs  = (h*3600 + m*60 + s) * 1000;
+  const startMs   = getStartOffsetMs();
+  const newElapsed = syncTcMs - startMs;
+
+  if (newElapsed < 0) {
+    alert('El TC ingresado es anterior al Start TC configurado.'); return;
+  }
+
+  // Recalibrar el reloj
+  elapsedMs = newElapsed;
+  if (clockRunning) lastTick = Date.now();
+
+  // Feedback
+  const btn = document.getElementById('btn-sync');
+  btn.classList.add('synced'); btn.textContent = '✓ Synced';
+  document.getElementById('sync-status').textContent = `desde ${val}`;
+  document.getElementById('sync-status').style.color = 'var(--green)';
+  setTimeout(() => { btn.classList.remove('synced'); btn.textContent = '⟳ Sync'; }, 2000);
 }
 
 // ── Captura de notas ──────────────────────────────────────────────────────────
