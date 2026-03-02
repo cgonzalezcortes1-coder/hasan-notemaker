@@ -805,11 +805,11 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     server = HTTPServer(('0.0.0.0', PORT), Handler)
-    url    = f'http://localhost:{PORT}'
-    print(f"\n🎬 Notemaker corriendo en {url}")
+    print(f"\n🎬 Notemaker corriendo en puerto {PORT}")
     print(f"   Ctrl+C para cerrar.\n")
-    if os.environ.get('RAILWAY_ENVIRONMENT') is None:
-        threading.Timer(0.8, lambda: webbrowser.open(url)).start()
+    if not os.environ.get('PORT'):
+        import webbrowser
+        threading.Timer(0.8, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
     try: server.serve_forever()
     except KeyboardInterrupt: print("\nNotemaker cerrado.")
 
