@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 """
-Esta Version es la que funcionaba antes de añadir, PDF, visión para dispositivos móviles y botón de capturar TC
-
 Notemaker — TC Logger + AAF Generator para Pro Tools.
 Corre en el navegador via localhost:8765.
 
@@ -173,41 +171,32 @@ HTML = r"""<!DOCTYPE html>
   --fg2:     #888;
   --green:   #4caf7d;
   --red:     #e05252;
-  --blue:    #4a9eff;
   --mono:    'IBM Plex Mono', monospace;
   --sans:    'IBM Plex Sans', sans-serif;
 }
 body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--sans);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 32px 20px 60px;
+  background: var(--bg); color: var(--fg); font-family: var(--sans);
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; padding: 24px 12px 60px;
 }
 header {
   width: 100%; max-width: 700px;
-  display: flex; align-items: baseline; gap: 16px;
+  display: flex; align-items: baseline; gap: 12px;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 18px; margin-bottom: 28px;
+  padding-bottom: 14px; margin-bottom: 20px;
+  flex-wrap: wrap;
 }
-header h1 { font-family: var(--mono); font-size: 26px; color: var(--amber); }
-header span { font-size: 13px; color: var(--fg2); font-weight: 300; }
+header h1 { font-family: var(--mono); font-size: 22px; color: var(--amber); }
+header span { font-size: 12px; color: var(--fg2); font-weight: 300; }
 
 /* Tabs */
-.tabs {
-  width: 100%; max-width: 700px;
-  display: flex; gap: 2px; margin-bottom: 20px;
-}
+.tabs { width: 100%; max-width: 700px; display: flex; gap: 2px; margin-bottom: 16px; }
 .tab {
-  padding: 9px 22px;
-  font-family: var(--mono); font-size: 12px; font-weight: 500;
-  letter-spacing: 0.8px; text-transform: uppercase;
+  flex: 1; padding: 9px 10px; text-align: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.5px; text-transform: uppercase;
   border: 1px solid var(--border); border-radius: 3px;
-  cursor: pointer; background: var(--surface); color: var(--fg2);
-  transition: all 0.15s;
+  cursor: pointer; background: var(--surface); color: var(--fg2); transition: all 0.15s;
 }
 .tab.active { background: var(--amber); color: #000; border-color: var(--amber); }
 .tab:not(.active):hover { color: var(--fg); border-color: #444; }
@@ -219,38 +208,41 @@ header span { font-size: 13px; color: var(--fg2); font-weight: 300; }
 /* Card */
 .card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 4px; margin-bottom: 14px; overflow: hidden;
+  border-radius: 4px; margin-bottom: 12px; overflow: hidden;
 }
 .card-header {
-  padding: 11px 18px; border-bottom: 1px solid var(--border);
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
   font-family: var(--mono); font-size: 10px; font-weight: 500;
-  color: var(--fg2); letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--fg2); letter-spacing: 1.2px; text-transform: uppercase;
 }
-.card-body { padding: 18px; }
+.card-body { padding: 14px 16px; }
 
-/* Fields */
-.config-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+/* Config grid */
+.config-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .config-grid { grid-template-columns: 1fr 1fr; } }
 .field label {
   display: block; font-size: 10px; font-weight: 500; color: var(--fg2);
-  letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 7px;
-  font-family: var(--mono);
+  letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; font-family: var(--mono);
 }
 .field select, .field input[type=text], .field input[type=number] {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
   border-radius: 3px; color: var(--fg); font-family: var(--mono);
-  font-size: 14px; padding: 8px 11px; outline: none;
-  transition: border-color 0.15s; appearance: none; -webkit-appearance: none;
+  font-size: 14px; padding: 8px 10px; outline: none; transition: border-color 0.15s;
+  appearance: none; -webkit-appearance: none;
+}
+@media (max-width: 480px) {
+  .field select, .field input[type=text], .field input[type=number] { font-size: 16px; }
 }
 .field select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer;
+  background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer;
 }
 .field select:focus, .field input:focus { border-color: var(--amber); }
-.field-full { margin-bottom: 14px; }
+.field-full { margin-bottom: 12px; }
 .field-full input {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
   border-radius: 3px; color: var(--fg); font-family: var(--mono);
-  font-size: 14px; padding: 8px 11px; outline: none; transition: border-color 0.15s;
+  font-size: 14px; padding: 8px 10px; outline: none; transition: border-color 0.15s;
 }
 .field-full input:focus { border-color: var(--amber); }
 
@@ -259,7 +251,7 @@ textarea {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
   border-radius: 3px; color: var(--fg); font-family: var(--mono);
   font-size: 13px; line-height: 1.8; padding: 12px 14px;
-  resize: vertical; min-height: 220px; outline: none; transition: border-color 0.15s;
+  resize: vertical; min-height: 200px; outline: none; transition: border-color 0.15s;
 }
 textarea:focus { border-color: var(--amber); }
 .hint { font-size: 11px; color: var(--fg2); font-family: var(--mono); margin-top: 9px; line-height: 2; }
@@ -268,88 +260,111 @@ textarea:focus { border-color: var(--amber); }
 /* Preview list */
 .preview-list { list-style: none; }
 .preview-list li {
-  display: flex; align-items: center; gap: 14px;
-  padding: 9px 18px; border-bottom: 1px solid var(--border); font-size: 13px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px; border-bottom: 1px solid var(--border); font-size: 12px;
 }
 .preview-list li:last-child { border-bottom: none; }
-.tc { font-family: var(--mono); color: var(--amber); font-size: 13px; min-width: 75px; }
-.dur { font-family: var(--mono); color: var(--fg2); font-size: 11px; min-width: 48px; }
-.rname { color: var(--fg); flex: 1; }
+.tc { font-family: var(--mono); color: var(--amber); font-size: 12px; min-width: 70px; }
+.dur { font-family: var(--mono); color: var(--fg2); font-size: 11px; min-width: 44px; }
+.rname { color: var(--fg); flex: 1; font-size: 12px; }
 
 /* Acciones */
-.actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 4px; }
-#status, #status2 { font-family: var(--mono); font-size: 12px; color: var(--fg2); flex: 1; }
+.actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+.actions-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.actions-right { display: flex; gap: 8px; flex-shrink: 0; }
+#status, #status2 { font-family: var(--mono); font-size: 11px; color: var(--fg2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ok  { color: var(--green) !important; }
 .err { color: var(--red)   !important; }
 
 /* Botones */
 .btn {
-  border: none; border-radius: 3px; font-family: var(--mono); font-size: 13px;
-  font-weight: 500; padding: 11px 24px; cursor: pointer;
+  border: none; border-radius: 3px; font-family: var(--mono); font-size: 12px;
+  font-weight: 500; padding: 10px 18px; cursor: pointer;
   transition: background 0.15s, transform 0.1s; white-space: nowrap;
 }
-.btn:active { transform: scale(0.98); }
+.btn:active { transform: scale(0.97); }
 .btn:disabled { background: #2a2a2a !important; color: #555 !important; cursor: not-allowed; transform: none; }
-.btn-primary  { background: var(--amber); color: #000; }
-.btn-primary:hover:not(:disabled)  { background: var(--amber2); }
-.btn-danger   { background: var(--red); color: #fff; }
-.btn-danger:hover:not(:disabled)   { background: #f06060; }
-.btn-ghost    { background: transparent; color: var(--fg2); border: 1px solid var(--border); }
-.btn-ghost:hover:not(:disabled)    { color: var(--fg); border-color: #555; }
+.btn-primary { background: var(--amber); color: #000; }
+.btn-primary:hover:not(:disabled) { background: var(--amber2); }
+.btn-pdf { background: #2a2a2a; color: var(--fg2); border: 1px solid var(--border); }
+.btn-pdf:hover:not(:disabled) { color: var(--fg); border-color: #555; }
+.btn-ghost { background: transparent; color: var(--fg2); border: 1px solid var(--border); }
+.btn-ghost:hover:not(:disabled) { color: var(--fg); border-color: #555; }
+.btn-danger { background: var(--red); color: #fff; }
 
-/* ── LOGGER ── */
+/* ── RELOJ ── */
 .clock-display {
-  text-align: center; padding: 32px 20px 24px;
-  font-family: var(--mono); font-size: 56px; font-weight: 500;
-  color: var(--amber); letter-spacing: 4px;
-  border-bottom: 1px solid var(--border);
-  transition: color 0.2s;
+  text-align: center; padding: 24px 16px 20px;
+  font-family: var(--mono); font-weight: 500; color: var(--amber);
+  letter-spacing: 3px; border-bottom: 1px solid var(--border); transition: color 0.2s;
+  font-size: clamp(28px, 8vw, 52px);
 }
 .clock-display.running { color: var(--green); }
 .clock-display.stopped { color: var(--fg2); }
 
 .clock-controls {
-  display: flex; gap: 10px; padding: 16px 18px;
-  border-bottom: 1px solid var(--border); align-items: center;
+  display: flex; gap: 8px; padding: 12px 16px;
+  border-bottom: 1px solid var(--border); align-items: center; flex-wrap: wrap;
 }
-.clock-hint { font-size: 11px; color: var(--fg2); font-family: var(--mono); margin-left: auto; }
+.clock-hint { font-size: 11px; color: var(--fg2); font-family: var(--mono); margin-left: auto; text-align: right; }
+@media (max-width: 480px) { .clock-hint { width: 100%; margin-left: 0; margin-top: 6px; } }
 
-/* Input de nota en tiempo real */
+/* Input de nota */
 .note-input-wrap {
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
-  display: flex; gap: 10px; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
 }
 .note-input-wrap input {
-  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--border);
   border-radius: 3px; color: var(--fg); font-family: var(--mono);
-  font-size: 15px; padding: 10px 14px; outline: none;
-  transition: border-color 0.15s;
+  font-size: 15px; padding: 10px 12px; outline: none; transition: border-color 0.15s;
 }
+@media (max-width: 480px) { .note-input-wrap input { font-size: 16px; } }
 .note-input-wrap input:focus { border-color: var(--amber); }
 .note-input-wrap input:disabled { opacity: 0.3; }
-.enter-hint { font-size: 11px; color: var(--fg2); font-family: var(--mono); white-space: nowrap; }
 
-/* Lista de notas capturadas */
-.log-list { list-style: none; max-height: 280px; overflow-y: auto; }
+/* Botón capturar TC (móvil) */
+.btn-capture {
+  background: var(--amber); color: #000; border: none; border-radius: 3px;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  padding: 10px 12px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: background 0.15s;
+}
+.btn-capture:hover { background: var(--amber2); }
+.btn-capture:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
+.btn-capture.captured { background: var(--green); color: #000; }
+
+/* Lista log */
+.log-list { list-style: none; max-height: 260px; overflow-y: auto; }
 .log-list li {
-  display: flex; align-items: center; gap: 14px;
-  padding: 9px 18px; border-bottom: 1px solid var(--border);
-  font-size: 13px; animation: fadeIn 0.2s ease;
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+  font-size: 12px; animation: fadeIn 0.2s ease;
 }
 .log-list li:last-child { border-bottom: none; }
-@keyframes fadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: none; } }
-.log-tc { font-family: var(--mono); color: var(--amber); font-size: 13px; min-width: 90px; }
-.log-name { color: var(--fg); flex: 1; }
-.log-del {
-  background: none; border: none; color: #444; cursor: pointer;
-  font-size: 16px; padding: 0 4px; transition: color 0.15s;
-}
+@keyframes fadeIn { from { opacity:0; transform: translateY(-3px); } to { opacity:1; transform: none; } }
+.log-tc { font-family: var(--mono); color: var(--amber); font-size: 12px; min-width: 80px; flex-shrink: 0; }
+.log-name { color: var(--fg); flex: 1; font-size: 12px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.log-del { background: none; border: none; color: #444; cursor: pointer; font-size: 16px; padding: 0 4px; transition: color 0.15s; flex-shrink: 0; }
 .log-del:hover { color: var(--red); }
-.log-empty { padding: 24px 18px; text-align: center; color: var(--fg2); font-family: var(--mono); font-size: 12px; }
+.log-empty { padding: 20px 16px; text-align: center; color: var(--fg2); font-family: var(--mono); font-size: 11px; }
 
-/* Flash en captura */
 @keyframes flash { 0%{background:rgba(245,166,35,0.15)} 100%{background:transparent} }
 .flash { animation: flash 0.4s ease; }
+
+/* ── PDF PRINT ── */
+@media print {
+  body { background: #fff; color: #000; padding: 20px; }
+  .tabs, .actions, .clock-controls, .note-input-wrap, button, header span { display: none; }
+  header h1 { color: #000; font-size: 18px; }
+  .card { border: 1px solid #ccc; }
+  .card-header { color: #333; border-bottom: 1px solid #ccc; }
+  .log-tc { color: #333; }
+  .log-name { color: #000; }
+  .log-del { display: none; }
+  #panel-logger { display: block !important; }
+  #panel-editor { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -359,21 +374,19 @@ textarea:focus { border-color: var(--amber); }
   <span>TC Logger + AAF Generator for Pro Tools — Hasan Estudio</span>
 </header>
 
-<!-- Tabs -->
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('logger')">① Logger en vivo</div>
-  <div class="tab" onclick="switchTab('editor')">② Editor + Export</div>
+  <div class="tab active" onclick="switchTab('logger')">① Logger</div>
+  <div class="tab" onclick="switchTab('editor')">② Editor</div>
 </div>
 
-<!-- ══ PANEL: LOGGER ══════════════════════════════════════════════════════ -->
+<!-- ══ LOGGER ════════════════════════════════════════════════════════════ -->
 <div class="panel active" id="panel-logger">
 
-  <!-- Config -->
   <div class="card">
-    <div class="card-header">Configuración</div>
+    <div class="card-header">Proyecto</div>
     <div class="card-body">
       <div class="field-full">
-        <label style="display:block;font-size:10px;font-weight:500;color:var(--fg2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;font-family:var(--mono)">Nombre del proyecto</label>
+        <label style="display:block;font-size:10px;font-weight:500;color:var(--fg2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;font-family:var(--mono)">Nombre del proyecto</label>
         <input type="text" id="l-filename" placeholder="El Eternauta">
       </div>
       <div class="config-grid">
@@ -393,7 +406,7 @@ textarea:focus { border-color: var(--amber); }
         </div>
         <div class="field">
           <label>Start TC</label>
-          <input type="text" id="l-start" value="00:00:00:00" placeholder="01:00:00:00">
+          <input type="text" id="l-start" value="00:00:00:00">
         </div>
         <div class="field">
           <label>Dur. default (s)</label>
@@ -403,45 +416,49 @@ textarea:focus { border-color: var(--amber); }
     </div>
   </div>
 
-  <!-- Reloj -->
   <div class="card">
     <div class="clock-display stopped" id="clock">00:00:00:00</div>
     <div class="clock-controls">
       <button class="btn btn-primary" id="btn-start" onclick="startClock()">▶ Start</button>
       <button class="btn btn-ghost" id="btn-stop" onclick="stopClock()" disabled>■ Stop</button>
       <button class="btn btn-ghost" id="btn-reset" onclick="resetClock()">↺ Reset</button>
-      <span class="clock-hint" id="clock-hint">Configura el TC y dale Start cuando empiece la proyección</span>
+      <span class="clock-hint" id="clock-hint">Configura el TC y dale Start</span>
     </div>
     <div class="note-input-wrap">
-      <input type="text" id="note-input" placeholder="Escribe la nota y presiona Enter para capturar el TC..." disabled
+      <button class="btn-capture" id="btn-capture" onclick="captureTC()" disabled>⏱ Capturar TC</button>
+      <input type="text" id="note-input" placeholder="Escribe la nota y presiona Enter..." disabled
              onkeydown="handleNoteKey(event)">
-      <span class="enter-hint" id="note-capture-hint" style="font-size:11px;color:var(--fg2);font-family:var(--mono);max-width:300px;text-align:right">Shift+Enter para capturar TC → escribe la nota → Enter para guardar</span>
+    </div>
+    <div style="padding:6px 16px 10px;font-size:10px;color:var(--fg2);font-family:var(--mono)" id="note-capture-hint">
+      Toca Capturar TC (o Shift+Enter) → escribe la nota → Enter para guardar
     </div>
   </div>
 
-  <!-- Log de notas capturadas -->
   <div class="card">
     <div class="card-header" id="log-header">Notas capturadas</div>
-    <div id="log-empty" class="log-empty">Ninguna nota aún — dale Start y empieza a capturar.</div>
+    <div id="log-empty" class="log-empty">Ninguna nota aún.</div>
     <ul class="log-list" id="log-list"></ul>
   </div>
 
-  <!-- Acciones -->
   <div class="actions">
-    <span id="status2"></span>
-    <button class="btn btn-ghost" onclick="clearLog()" style="margin-right:auto">Limpiar</button>
-    <button class="btn btn-primary" onclick="generateFromLog()">Generar AAF →</button>
+    <div class="actions-left">
+      <button class="btn btn-ghost" onclick="clearLog()">Limpiar</button>
+      <span id="status2"></span>
+    </div>
+    <div class="actions-right">
+      <button class="btn btn-pdf" onclick="exportPDF()">PDF</button>
+      <button class="btn btn-primary" onclick="generateFromLog()">AAF →</button>
+    </div>
   </div>
 </div>
 
-<!-- ══ PANEL: EDITOR ══════════════════════════════════════════════════════ -->
+<!-- ══ EDITOR ════════════════════════════════════════════════════════════ -->
 <div class="panel" id="panel-editor">
-
   <div class="card">
     <div class="card-header">Proyecto</div>
     <div class="card-body">
       <div class="field-full">
-        <label style="display:block;font-size:10px;font-weight:500;color:var(--fg2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;font-family:var(--mono)">Nombre del proyecto</label>
+        <label style="display:block;font-size:10px;font-weight:500;color:var(--fg2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;font-family:var(--mono)">Nombre del proyecto</label>
         <input type="text" id="e-filename" placeholder="El Eternauta">
       </div>
       <div class="config-grid">
@@ -479,8 +496,7 @@ textarea:focus { border-color: var(--amber); }
 01:01:15 Foley pasos</textarea>
       <div class="hint">
         <code>HH:MM:SS Nombre</code> → dur. default &nbsp;|&nbsp;
-        <code>HH:MM:SS - HH:MM:SS Nombre</code> → dur. exacta &nbsp;|&nbsp;
-        <code># comentario</code> → ignorado
+        <code>HH:MM:SS - HH:MM:SS Nombre</code> → dur. exacta
       </div>
     </div>
   </div>
@@ -493,8 +509,11 @@ textarea:focus { border-color: var(--amber); }
   </div>
 
   <div class="actions">
-    <span id="status"></span>
-    <button class="btn btn-primary" onclick="generateFromEditor()">Generar AAF →</button>
+    <div class="actions-left"><span id="status"></span></div>
+    <div class="actions-right">
+      <button class="btn btn-pdf" onclick="exportPDFEditor()">PDF</button>
+      <button class="btn btn-primary" onclick="generateFromEditor()">AAF →</button>
+    </div>
   </div>
 </div>
 
@@ -509,17 +528,8 @@ function switchTab(tab) {
   if (tab==='editor') syncEditorFromLog();
 }
 
-// ── Reloj TC ──────────────────────────────────────────────────────────────────
-let clockInterval = null;
-let elapsedMs     = 0;
-let lastTick      = null;
-let clockRunning  = false;
-
-const FPS_MULT = {
-  '23.976': 1000/1000, '24': 1, '25': 1,
-  '29.97': 1000/1000,  '30': 1, '48': 1,
-  '50': 1, '59.94': 1000/1000, '60': 1
-};
+// ── Reloj ─────────────────────────────────────────────────────────────────────
+let clockInterval = null, elapsedMs = 0, lastTick = null, clockRunning = false;
 
 function getStartOffsetMs() {
   const start = document.getElementById('l-start').value;
@@ -529,7 +539,7 @@ function getStartOffsetMs() {
 }
 
 function msToTC(ms) {
-  const fps    = parseFloat(document.getElementById('l-fps').value);
+  const fps = parseFloat(document.getElementById('l-fps').value);
   const totalS = ms / 1000;
   const h  = Math.floor(totalS / 3600);
   const m  = Math.floor((totalS % 3600) / 60);
@@ -542,148 +552,167 @@ function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
 
 function updateClock() {
   if (!clockRunning) return;
-  const now  = Date.now();
+  const now = Date.now();
   elapsedMs += now - lastTick;
-  lastTick   = now;
-  const displayMs = getStartOffsetMs() + elapsedMs;
-  document.getElementById('clock').textContent = msToTC(displayMs);
+  lastTick = now;
+  document.getElementById('clock').textContent = msToTC(getStartOffsetMs() + elapsedMs);
 }
 
 function startClock() {
   if (clockRunning) return;
-  clockRunning = true;
-  lastTick     = Date.now();
+  clockRunning = true; lastTick = Date.now();
   clockInterval = setInterval(updateClock, 50);
-  document.getElementById('clock').className      = 'clock-display running';
-  document.getElementById('btn-start').disabled   = true;
-  document.getElementById('btn-stop').disabled    = false;
-  document.getElementById('note-input').disabled  = false;
+  document.getElementById('clock').className     = 'clock-display running';
+  document.getElementById('btn-start').disabled  = true;
+  document.getElementById('btn-stop').disabled   = false;
+  document.getElementById('note-input').disabled = false;
+  document.getElementById('btn-capture').disabled = false;
   document.getElementById('note-input').focus();
-  document.getElementById('clock-hint').textContent = 'Escribe la nota y presiona Enter para capturar el TC';
+  document.getElementById('clock-hint').textContent = 'Corriendo';
 }
 
 function stopClock() {
   if (!clockRunning) return;
-  clockRunning = false;
-  clearInterval(clockInterval);
-  document.getElementById('clock').className      = 'clock-display stopped';
-  document.getElementById('btn-start').disabled   = false;
-  document.getElementById('btn-stop').disabled    = true;
-  document.getElementById('note-input').disabled  = true;
-  document.getElementById('clock-hint').textContent = 'Pausado — dale Start para continuar';
+  clockRunning = false; clearInterval(clockInterval);
+  document.getElementById('clock').className     = 'clock-display stopped';
+  document.getElementById('btn-start').disabled  = false;
+  document.getElementById('btn-stop').disabled   = true;
+  document.getElementById('note-input').disabled = true;
+  document.getElementById('btn-capture').disabled = true;
+  document.getElementById('clock-hint').textContent = 'Pausado';
 }
 
 function resetClock() {
-  stopClock();
-  elapsedMs = 0;
-  const startMs = getStartOffsetMs();
-  document.getElementById('clock').textContent   = msToTC(startMs);
-  document.getElementById('clock').className     = 'clock-display stopped';
-  document.getElementById('clock-hint').textContent = 'Configura el TC y dale Start cuando empiece la proyección';
+  stopClock(); elapsedMs = 0;
+  document.getElementById('clock').textContent = msToTC(getStartOffsetMs());
+  document.getElementById('clock').className   = 'clock-display stopped';
+  document.getElementById('clock-hint').textContent = 'Configura el TC y dale Start';
 }
 
-// ── Captura de notas ───────────────────────────────────────────────────────
-let logEntries = []; // [{tc_str, elapsed_ms, name}]
+// ── Captura de notas ──────────────────────────────────────────────────────────
+let logEntries = [], capturedTC = null;
 
-let capturedTC = null; // TC capturado con Shift+Enter
+function captureTC() {
+  const now          = Date.now();
+  const extra        = clockRunning ? (now - lastTick) : 0;
+  const totalElapsed = elapsedMs + extra;
+  const displayMs    = getStartOffsetMs() + totalElapsed;
+  capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed };
+  const btn = document.getElementById('btn-capture');
+  btn.classList.add('captured');
+  btn.textContent = '✓ ' + capturedTC.tc_str;
+  document.getElementById('note-capture-hint').textContent = 'TC capturado — escribe la nota y presiona Enter';
+  document.getElementById('note-capture-hint').style.color = 'var(--amber)';
+  document.getElementById('note-input').focus();
+  setTimeout(() => { btn.classList.remove('captured'); btn.textContent = '⏱ Capturar TC'; }, 3000);
+}
 
 function handleNoteKey(e) {
-  // Shift+Enter → captura TC ahora
   if (e.key === 'Enter' && e.shiftKey) {
-    e.preventDefault();
-    const now          = Date.now();
-    const extra        = clockRunning ? (now - lastTick) : 0;
-    const totalElapsed = elapsedMs + extra;
-    const displayMs    = getStartOffsetMs() + totalElapsed;
-    capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed };
-
-    // Feedback visual en el hint
-    document.getElementById('note-capture-hint').textContent = `TC capturado: ${capturedTC.tc_str} — escribe la nota y presiona Enter`;
-    document.getElementById('note-capture-hint').style.color = 'var(--amber)';
-    return;
+    e.preventDefault(); captureTC(); return;
   }
-
-  // Enter solo → guardar nota con TC capturado
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     const input = document.getElementById('note-input');
     const name  = input.value.trim();
     if (!name) return;
-
-    // Si no hay TC capturado, usar el TC actual
     if (!capturedTC) {
-      const now          = Date.now();
-      const extra        = clockRunning ? (now - lastTick) : 0;
+      const now = Date.now(), extra = clockRunning ? (now - lastTick) : 0;
       const totalElapsed = elapsedMs + extra;
-      const displayMs    = getStartOffsetMs() + totalElapsed;
-      capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed };
+      capturedTC = { tc_str: msToTC(getStartOffsetMs() + totalElapsed), elapsed_ms: totalElapsed };
     }
-
     logEntries.push({ tc_str: capturedTC.tc_str, elapsed_ms: capturedTC.elapsed_ms, name });
-    input.value = '';
-    capturedTC  = null;
-    document.getElementById('note-capture-hint').textContent = 'Shift+Enter para capturar TC → escribe la nota → Enter para guardar';
+    input.value = ''; capturedTC = null;
+    document.getElementById('note-capture-hint').textContent = 'Toca Capturar TC (o Shift+Enter) → escribe la nota → Enter para guardar';
     document.getElementById('note-capture-hint').style.color = 'var(--fg2)';
     renderLog();
-
-    // Flash
     const row = document.getElementById('log-list').lastElementChild;
     if (row) row.classList.add('flash');
   }
 }
 
 function renderLog() {
-  const list   = document.getElementById('log-list');
-  const empty  = document.getElementById('log-empty');
-  const header = document.getElementById('log-header');
+  const list = document.getElementById('log-list');
+  const empty = document.getElementById('log-empty');
+  document.getElementById('log-header').textContent = logEntries.length
+    ? `Notas capturadas (${logEntries.length})` : 'Notas capturadas';
   list.innerHTML = '';
-  if (logEntries.length === 0) {
-    empty.style.display  = 'block';
-    header.textContent   = 'Notas capturadas';
-    return;
-  }
-  empty.style.display = 'none';
-  header.textContent  = `Notas capturadas (${logEntries.length})`;
+  empty.style.display = logEntries.length ? 'none' : 'block';
   logEntries.forEach((e, i) => {
     const li = document.createElement('li');
-    li.innerHTML = `
-      <span class="log-tc">${e.tc_str}</span>
-      <span class="log-name">${e.name}</span>
-      <button class="log-del" onclick="deleteEntry(${i})" title="Eliminar">×</button>
-    `;
+    li.innerHTML = `<span class="log-tc">${e.tc_str}</span><span class="log-name">${e.name}</span><button class="log-del" onclick="deleteEntry(${i})">×</button>`;
     list.appendChild(li);
   });
 }
 
-function deleteEntry(i) {
-  logEntries.splice(i, 1);
-  renderLog();
-}
-
+function deleteEntry(i) { logEntries.splice(i, 1); renderLog(); }
 function clearLog() {
   if (logEntries.length && !confirm('¿Limpiar todas las notas?')) return;
-  logEntries = [];
-  renderLog();
+  logEntries = []; renderLog();
 }
 
-// Convierte el log a texto plano para el editor
 function logToText() {
   return logEntries.map(e => {
-    // tc_str es HH:MM:SS:FF — lo convertimos a HH:MM:SS
     const parts = e.tc_str.split(':');
-    const hms   = parts.slice(0,3).join(':');
-    return `${hms} ${e.name}`;
+    return `${parts.slice(0,3).join(':')} ${e.name}`;
   }).join('\n');
 }
 
 function syncEditorFromLog() {
-  if (logEntries.length === 0) return;
+  if (!logEntries.length) return;
   document.getElementById('e-notes').value  = logToText();
   document.getElementById('e-fps').value    = document.getElementById('l-fps').value;
   document.getElementById('e-start').value  = document.getElementById('l-start').value;
   document.getElementById('e-dur').value    = document.getElementById('l-dur').value;
   const name = document.getElementById('l-filename').value;
   if (name) document.getElementById('e-filename').value = name;
+}
+
+// ── PDF ───────────────────────────────────────────────────────────────────────
+function exportPDF() {
+  if (!logEntries.length) { alert('No hay notas para exportar.'); return; }
+  const project = document.getElementById('l-filename').value || 'Notas';
+  const today   = new Date().toLocaleDateString('es-MX', {year:'numeric',month:'long',day:'numeric'});
+  const rows    = logEntries.map(e =>
+    `<tr><td class="tc-col">${e.tc_str}</td><td>${e.name}</td></tr>`
+  ).join('');
+  printDoc(project, today, rows);
+}
+
+function exportPDFEditor() {
+  const notes   = document.getElementById('e-notes').value.trim();
+  const project = document.getElementById('e-filename').value || 'Notas';
+  const today   = new Date().toLocaleDateString('es-MX', {year:'numeric',month:'long',day:'numeric'});
+  if (!notes) { alert('No hay notas para exportar.'); return; }
+  const rows = notes.split('\n').filter(l => l.trim() && !l.startsWith('#')).map(l => {
+    const m = l.match(/^(\d{1,2}:\d{2}:\d{2}(?::\d{1,2})?)/);
+    const tc   = m ? m[1] : '';
+    const name = m ? l.slice(m[0].length).replace(/^\s*-\s*/, '').trim() : l;
+    return `<tr><td class="tc-col">${tc}</td><td>${name}</td></tr>`;
+  }).join('');
+  printDoc(project, today, rows);
+}
+
+function printDoc(project, today, rows) {
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>${project}</title>
+  <style>
+    body { font-family: 'Courier New', monospace; font-size: 12px; color: #000; padding: 32px; }
+    h1 { font-size: 18px; margin-bottom: 4px; }
+    .sub { color: #666; font-size: 11px; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    tr { border-bottom: 1px solid #e0e0e0; }
+    td { padding: 7px 8px; vertical-align: top; }
+    .tc-col { color: #333; width: 110px; white-space: nowrap; font-weight: bold; }
+    @media print { body { padding: 16px; } }
+  </style></head><body>
+  <h1>${project}</h1>
+  <div class="sub">${today} — Hasan Estudio</div>
+  <table>${rows}</table>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 // ── Generar AAF ───────────────────────────────────────────────────────────────
@@ -696,9 +725,7 @@ async function doGenerate(payload, statusEl) {
   statusEl.textContent = 'Generando...'; statusEl.className = '';
   try {
     const res = await fetch('/generate', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
     });
     if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
     const regions = JSON.parse(res.headers.get('X-Regions') || '[]');
@@ -706,51 +733,37 @@ async function doGenerate(payload, statusEl) {
     const blob    = await res.blob();
     const url     = URL.createObjectURL(blob);
     const a       = document.createElement('a');
-    a.href = url; a.download = fname; a.click();
-    URL.revokeObjectURL(url);
+    a.href = url; a.download = fname; a.click(); URL.revokeObjectURL(url);
     statusEl.textContent = `✓ ${fname} — ${regions.length} región(es)`;
     statusEl.className   = 'ok';
     return regions;
   } catch(e) {
-    statusEl.textContent = `✗ ${e.message}`;
-    statusEl.className   = 'err';
-    return null;
+    statusEl.textContent = `✗ ${e.message}`; statusEl.className = 'err'; return null;
   }
 }
 
 async function generateFromLog() {
-  if (logEntries.length === 0) {
-    document.getElementById('status2').textContent = '✗ No hay notas capturadas';
-    document.getElementById('status2').className   = 'err';
-    return;
+  if (!logEntries.length) {
+    document.getElementById('status2').textContent = '✗ No hay notas';
+    document.getElementById('status2').className   = 'err'; return;
   }
-  const payload = {
-    fps:      document.getElementById('l-fps').value,
-    start:    document.getElementById('l-start').value,
-    dur:      document.getElementById('l-dur').value,
-    notes:    logToText(),
+  await doGenerate({
+    fps: document.getElementById('l-fps').value, start: document.getElementById('l-start').value,
+    dur: document.getElementById('l-dur').value, notes: logToText(),
     filename: document.getElementById('l-filename').value.trim() || 'notas'
-  };
-  await doGenerate(payload, document.getElementById('status2'));
+  }, document.getElementById('status2'));
 }
 
 async function generateFromEditor() {
   const regions = await doGenerate({
-    fps:      document.getElementById('e-fps').value,
-    start:    document.getElementById('e-start').value,
-    dur:      document.getElementById('e-dur').value,
-    notes:    document.getElementById('e-notes').value,
+    fps: document.getElementById('e-fps').value, start: document.getElementById('e-start').value,
+    dur: document.getElementById('e-dur').value, notes: document.getElementById('e-notes').value,
     filename: document.getElementById('e-filename').value.trim() || 'notas'
   }, document.getElementById('status'));
-
   if (regions && regions.length) {
-    const list  = document.getElementById('e-preview-list');
-    const title = document.getElementById('e-preview-title');
-    title.textContent = `${regions.length} región${regions.length>1?'es':''} generada${regions.length>1?'s':''}`;
-    list.innerHTML = regions.map(r =>
-      `<li><span class="tc">${fmtSec(Math.round(r.start))}</span>
-           <span class="dur">${r.dur.toFixed(1)}s</span>
-           <span class="rname">${r.name}</span></li>`
+    document.getElementById('e-preview-title').textContent = `${regions.length} región(es) generada(s)`;
+    document.getElementById('e-preview-list').innerHTML = regions.map(r =>
+      `<li><span class="tc">${fmtSec(Math.round(r.start))}</span><span class="dur">${r.dur.toFixed(1)}s</span><span class="rname">${r.name}</span></li>`
     ).join('');
     document.getElementById('e-preview').style.display = 'block';
   }
