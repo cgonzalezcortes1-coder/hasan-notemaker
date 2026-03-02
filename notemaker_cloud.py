@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+Esta Version es la que funcionaba antes de añadir, PDF, visión para dispositivos móviles y botón de capturar TC
+
 Notemaker — TC Logger + AAF Generator para Pro Tools.
 Corre en el navegador via localhost:8765.
 
