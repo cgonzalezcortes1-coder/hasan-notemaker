@@ -125,6 +125,7 @@ def build_aaf_bytes(regions, seq_name):
                 ess = result[0] if isinstance(result, tuple) else result
                 if hasattr(ess, 'write'): ess.write(wav)
                 if hasattr(ess, 'close'): ess.close()
+                del wav  # liberar memoria inmediatamente
                 master = f.create.MasterMob()
                 master.name = name
                 mslot = master.create_timeline_slot(edit_rate=EDIT_RATE)
@@ -145,7 +146,8 @@ def build_aaf_bytes(regions, seq_name):
             seq.components.extend(components)
             tslot.segment = seq
         with open(tmp_path, 'rb') as f:
-            return f.read()
+            data = f.read()
+        return data
     finally:
         os.unlink(tmp_path)
 
@@ -785,6 +787,7 @@ class Handler(BaseHTTPRequestHandler):
             regions   = parse_notes(notes_txt, default_dur, fps_str, start_str)
             if not regions: raise ValueError("No se encontraron notas con timecode válido.")
             aaf_bytes = build_aaf_bytes(regions, seq_name)
+            import gc; gc.collect()
         except Exception as e:
             self.send_response(400)
             self.send_header('Content-Type', 'application/json')
@@ -805,11 +808,11 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     server = HTTPServer(('0.0.0.0', PORT), Handler)
-    print(f"\n🎬 Notemaker corriendo en puerto {PORT}")
+    url    = f'http://localhost:{PORT}'
+    print(f"\n🎬 Notemaker corriendo en {url}")
     print(f"   Ctrl+C para cerrar.\n")
-    if not os.environ.get('PORT'):
-        import webbrowser
-        threading.Timer(0.8, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
+    if os.environ.get('RAILWAY_ENVIRONMENT') is None:
+        threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try: server.serve_forever()
     except KeyboardInterrupt: print("\nNotemaker cerrado.")
 
