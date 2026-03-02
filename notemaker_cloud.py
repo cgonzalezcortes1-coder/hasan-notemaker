@@ -318,7 +318,7 @@ textarea:focus { border-color: var(--amber); }
 .sync-wrap input {
   background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
   color: var(--fg); font-family: var(--mono); font-size: 14px;
-  padding: 7px 10px; outline: none; width: 110px; transition: border-color 0.15s;
+  padding: 7px 10px; outline: none; width: 130px; transition: border-color 0.15s;
 }
 .sync-wrap input:focus { border-color: var(--amber); }
 .btn-sync {
@@ -446,8 +446,8 @@ textarea:focus { border-color: var(--amber); }
       <span class="clock-hint" id="clock-hint">Configura el TC y dale Start</span>
     </div>
     <div class="sync-wrap">
-      <span class="sync-label">Sync con PT</span>
-      <input type="text" id="sync-input" placeholder="01:05:32" maxlength="11">
+      <span class="sync-label">Play from:</span>
+      <input type="text" id="sync-input" placeholder="01:05:32:14" maxlength="14">
       <button class="btn-sync" id="btn-sync" onclick="syncTC()">⟳ Sync</button>
       <span class="sync-status" id="sync-status"></span>
     </div>
