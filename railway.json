@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "python3 notemaker.py",
+    "startCommand": "notemaker_cloud.py",
     "restartPolicyType": "ON_FAILURE"
   }
 }
