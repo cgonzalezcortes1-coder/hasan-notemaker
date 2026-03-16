@@ -445,7 +445,7 @@ textarea:focus { border-color: var(--amber); }
     <div class="sync-wrap">
       <span class="sync-label">Play from:</span>
       <input type="text" id="sync-input" placeholder="01:05:32:14" maxlength="14">
-      <button class="btn-sync" id="btn-sync" onclick="syncTC()">⟳ Sync</button>
+      <button class="btn-sync" id="btn-sync" onclick="syncTC()">Save</button>
       <span class="sync-status" id="sync-status"></span>
     </div>
     <div class="note-input-wrap">
@@ -638,21 +638,22 @@ function syncTC() {
 
   // Feedback
   const btn = document.getElementById('btn-sync');
-  btn.classList.add('synced'); btn.textContent = '✓ Synced';
+  btn.classList.add('synced'); btn.textContent = '✓ Saved';
   document.getElementById('sync-status').textContent = `desde ${val}`;
   document.getElementById('sync-status').style.color = 'var(--green)';
-  setTimeout(() => { btn.classList.remove('synced'); btn.textContent = '⟳ Sync'; }, 2000);
+  setTimeout(() => { btn.classList.remove('synced'); btn.textContent = 'Save'; }, 2000);
 }
 
 // ── Captura de notas ──────────────────────────────────────────────────────────
-let logEntries = [], capturedTC = null;
+let logEntries = [], capturedTC = null, captureTimeout = null;
 
 function captureTC() {
   const now          = Date.now();
   const extra        = clockRunning ? (now - lastTick) : 0;
   const totalElapsed = elapsedMs + extra;
   const displayMs    = getStartOffsetMs() + totalElapsed;
-  capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed };
+  capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed, wallTime: now };
+  if (captureTimeout) { clearTimeout(captureTimeout); captureTimeout = null; }
   const btn = document.getElementById('btn-capture');
   btn.classList.add('captured');
   btn.textContent = '✓ ' + capturedTC.tc_str;
@@ -660,6 +661,11 @@ function captureTC() {
   document.getElementById('note-capture-hint').style.color = 'var(--amber)';
   document.getElementById('note-input').focus();
   setTimeout(() => { btn.classList.remove('captured'); btn.textContent = '⏱ Capturar TC'; }, 3000);
+  captureTimeout = setTimeout(() => {
+    capturedTC = null; captureTimeout = null;
+    document.getElementById('note-capture-hint').textContent = 'Toca Capturar TC (o Shift+Enter) → escribe la nota → Enter para guardar';
+    document.getElementById('note-capture-hint').style.color = 'var(--fg2)';
+  }, 12000);
 }
 
 function handleNoteKey(e) {
@@ -671,12 +677,18 @@ function handleNoteKey(e) {
     const input = document.getElementById('note-input');
     const name  = input.value.trim();
     if (!name) return;
+    const now = Date.now();
     if (!capturedTC) {
-      const now = Date.now(), extra = clockRunning ? (now - lastTick) : 0;
+      const extra = clockRunning ? (now - lastTick) : 0;
       const totalElapsed = elapsedMs + extra;
-      capturedTC = { tc_str: msToTC(getStartOffsetMs() + totalElapsed), elapsed_ms: totalElapsed };
+      capturedTC = { tc_str: msToTC(getStartOffsetMs() + totalElapsed), elapsed_ms: totalElapsed, wallTime: now };
     }
-    logEntries.push({ tc_str: capturedTC.tc_str, elapsed_ms: capturedTC.elapsed_ms, name });
+    const writeMs  = now - capturedTC.wallTime;
+    const durSec   = Math.min(Math.max(writeMs / 1000, 1), 12);
+    const endElapsed = capturedTC.elapsed_ms + writeMs;
+    const endTcStr = msToTC(getStartOffsetMs() + endElapsed);
+    if (captureTimeout) { clearTimeout(captureTimeout); captureTimeout = null; }
+    logEntries.push({ tc_str: capturedTC.tc_str, end_tc_str: endTcStr, dur_sec: durSec, elapsed_ms: capturedTC.elapsed_ms, name });
     input.value = ''; capturedTC = null;
     document.getElementById('note-capture-hint').textContent = 'Toca Capturar TC (o Shift+Enter) → escribe la nota → Enter para guardar';
     document.getElementById('note-capture-hint').style.color = 'var(--fg2)';
@@ -708,8 +720,12 @@ function clearLog() {
 
 function logToText() {
   return logEntries.map(e => {
-    const parts = e.tc_str.split(':');
-    return `${parts.slice(0,3).join(':')} ${e.name}`;
+    const start = e.tc_str.split(':').slice(0,3).join(':');
+    if (e.end_tc_str) {
+      const end = e.end_tc_str.split(':').slice(0,3).join(':');
+      return `${start} - ${end} ${e.name}`;
+    }
+    return `${start} ${e.name}`;
   }).join('\n');
 }
 
