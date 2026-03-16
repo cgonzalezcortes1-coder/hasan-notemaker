@@ -77,16 +77,14 @@ def parse_notes(text, default_dur, fps_str, start_str):
         regions.append((name, start, dur))
     return sorted(regions, key=lambda r: r[1])
 
-def silence_wav(dur_sec):
-    n = int(round(dur_sec * SAMPLE_RATE))
-    dsize = n * 2
+def minimal_wav():
+    """WAV header con 0 muestras — mantiene el AAF liviano."""
     buf = BytesIO()
-    buf.write(b'RIFF'); buf.write(struct.pack('<I', 36 + dsize))
+    buf.write(b'RIFF'); buf.write(struct.pack('<I', 36))
     buf.write(b'WAVE')
     buf.write(b'fmt '); buf.write(struct.pack('<I', 16))
     buf.write(struct.pack('<HHIIHH', 1, 1, SAMPLE_RATE, SAMPLE_RATE*2, 2, 16))
-    buf.write(b'data'); buf.write(struct.pack('<I', dsize))
-    buf.write(b'\x00' * dsize)
+    buf.write(b'data'); buf.write(struct.pack('<I', 0))
     return buf.getvalue()
 
 def sr(sec): return int(round(sec * SAMPLE_RATE))
@@ -120,12 +118,11 @@ def build_aaf_bytes(regions, seq_name):
                 desc['Length'].value            = ds
                 src_mob['EssenceDescription'].value = desc
                 f.content.mobs.append(src_mob)
-                wav = silence_wav(dur_sec)
+                wav = minimal_wav()
                 result = src_mob.create_essence(1, 'sound', 'wave', EDIT_RATE)
                 ess = result[0] if isinstance(result, tuple) else result
                 if hasattr(ess, 'write'): ess.write(wav)
                 if hasattr(ess, 'close'): ess.close()
-                del wav  # liberar memoria inmediatamente
                 master = f.create.MasterMob()
                 master.name = name
                 mslot = master.create_timeline_slot(edit_rate=EDIT_RATE)
@@ -860,7 +857,6 @@ class Handler(BaseHTTPRequestHandler):
             regions   = parse_notes(notes_txt, default_dur, fps_str, start_str)
             if not regions: raise ValueError("No se encontraron notas con timecode válido.")
             aaf_bytes = build_aaf_bytes(regions, seq_name)
-            import gc; gc.collect()
         except Exception as e:
             self.send_response(400)
             self.send_header('Content-Type', 'application/json')
