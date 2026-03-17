@@ -645,15 +645,14 @@ function syncTC() {
 }
 
 // ── Captura de notas ──────────────────────────────────────────────────────────
-let logEntries = [], capturedTC = null, captureTimeout = null;
+let logEntries = [], capturedTC = null;
 
 function captureTC() {
   const now          = Date.now();
   const extra        = clockRunning ? (now - lastTick) : 0;
   const totalElapsed = elapsedMs + extra;
   const displayMs    = getStartOffsetMs() + totalElapsed;
-  capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed, wallTime: now };
-  if (captureTimeout) { clearTimeout(captureTimeout); captureTimeout = null; }
+  capturedTC = { tc_str: msToTC(displayMs), elapsed_ms: totalElapsed };
   const btn = document.getElementById('btn-capture');
   btn.classList.add('captured');
   btn.textContent = '✓ ' + capturedTC.tc_str;
@@ -661,11 +660,6 @@ function captureTC() {
   document.getElementById('note-capture-hint').style.color = 'var(--amber)';
   document.getElementById('note-input').focus();
   setTimeout(() => { btn.classList.remove('captured'); btn.textContent = '⏱ Capturar TC'; }, 3000);
-  captureTimeout = setTimeout(() => {
-    capturedTC = null; captureTimeout = null;
-    document.getElementById('note-capture-hint').textContent = 'Toca Capturar TC (o Shift+Enter) → escribe la nota → Enter para guardar';
-    document.getElementById('note-capture-hint').style.color = 'var(--fg2)';
-  }, 12000);
 }
 
 function handleNoteKey(e) {
@@ -677,18 +671,12 @@ function handleNoteKey(e) {
     const input = document.getElementById('note-input');
     const name  = input.value.trim();
     if (!name) return;
-    const now = Date.now();
     if (!capturedTC) {
-      const extra = clockRunning ? (now - lastTick) : 0;
+      const now = Date.now(), extra = clockRunning ? (now - lastTick) : 0;
       const totalElapsed = elapsedMs + extra;
-      capturedTC = { tc_str: msToTC(getStartOffsetMs() + totalElapsed), elapsed_ms: totalElapsed, wallTime: now };
+      capturedTC = { tc_str: msToTC(getStartOffsetMs() + totalElapsed), elapsed_ms: totalElapsed };
     }
-    const writeMs  = now - capturedTC.wallTime;
-    const durSec   = Math.min(Math.max(writeMs / 1000, 1), 12);
-    const endElapsed = capturedTC.elapsed_ms + writeMs;
-    const endTcStr = msToTC(getStartOffsetMs() + endElapsed);
-    if (captureTimeout) { clearTimeout(captureTimeout); captureTimeout = null; }
-    logEntries.push({ tc_str: capturedTC.tc_str, end_tc_str: endTcStr, dur_sec: durSec, elapsed_ms: capturedTC.elapsed_ms, name });
+    logEntries.push({ tc_str: capturedTC.tc_str, elapsed_ms: capturedTC.elapsed_ms, name });
     input.value = ''; capturedTC = null;
     document.getElementById('note-capture-hint').textContent = 'Toca Capturar TC (o Shift+Enter) → escribe la nota → Enter para guardar';
     document.getElementById('note-capture-hint').style.color = 'var(--fg2)';
@@ -720,12 +708,8 @@ function clearLog() {
 
 function logToText() {
   return logEntries.map(e => {
-    const start = e.tc_str.split(':').slice(0,3).join(':');
-    if (e.end_tc_str) {
-      const end = e.end_tc_str.split(':').slice(0,3).join(':');
-      return `${start} - ${end} ${e.name}`;
-    }
-    return `${start} ${e.name}`;
+    const parts = e.tc_str.split(':');
+    return `${parts.slice(0,3).join(':')} ${e.name}`;
   }).join('\n');
 }
 
