@@ -1,6 +1,6 @@
 # Hasan Notemaker — CLAUDE.md
 
-## Qué es esto
+## Qué es esto aquí?
 Herramienta web para post-producción de audio (cine/TV). Permite:
 1. **Logger**: reloj TC en tiempo real, capturar notas con timecode, exportar PDF
 2. **Editor**: editar notas TC manualmente y generar AAF para Pro Tools
