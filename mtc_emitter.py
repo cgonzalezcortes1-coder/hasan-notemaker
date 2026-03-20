@@ -7,9 +7,10 @@ Instalación (una sola vez):
     pip3 install mido python-rtmidi requests
 """
 
-import time, json
-from threading import Thread
-import tkinter as tk
+import mido
+import requests
+import time
+import sys
 
 NOTEMAKER_URL = 'https://notemaker.hasanestudio.net'
 STOP_TIMEOUT  = 0.2
@@ -31,26 +32,25 @@ def assemble_tc():
 
 def post_event(event, tc, fps):
     try:
-        import requests
         requests.post(f'{NOTEMAKER_URL}/tc',
                       json={'event': event, 'tc': tc, 'fps': fps},
                       timeout=3)
+        print(f'→ {event:5s} {tc}')
     except Exception as e:
         print(f'Error POST: {e}')
 
-def run_emitter(on_status):
+def main():
     global is_playing, last_qf_time, last_tc
-    import mido
-
-    on_status('waiting', '--:--:--:--')
 
     ports = mido.get_input_names()
     if not ports:
-        on_status('error', 'Sin puertos MIDI')
-        return
+        print('No hay puertos MIDI. Verifica el IAC Driver.')
+        sys.exit(1)
 
     port_name = next((p for p in ports if 'IAC' in p), ports[0])
-    on_status('idle', '--:--:--:--')
+    print(f'Conectado a: {port_name}')
+    print(f'Enviando a:  {NOTEMAKER_URL}')
+    print('Escuchando MTC... (Ctrl+C para salir)\n')
 
     with mido.open_input(port_name) as port:
         while True:
@@ -64,12 +64,10 @@ def run_emitter(on_status):
                     if not is_playing:
                         is_playing = True
                         tc, fps = assemble_tc()
-                        Thread(target=post_event, args=('play', tc, fps), daemon=True).start()
-                        on_status('playing', tc)
+                        post_event('play', tc, fps)
 
                     if msg.frame_type == 7:
                         last_tc = assemble_tc()
-                        on_status('playing', last_tc[0])
 
                 elif msg.type == 'sysex':
                     d = msg.data
@@ -79,68 +77,17 @@ def run_emitter(on_status):
                         hours    = hh & 0x1F
                         tc_str   = f'{hours:02d}:{mm:02d}:{ss:02d}:{ff:02d}'
                         last_tc  = (tc_str, FPS_MAP.get(fps_type, '29.97'))
-                        on_status('idle', tc_str)
 
             if is_playing and (now - last_qf_time) > STOP_TIMEOUT:
                 is_playing = False
                 if last_tc:
                     tc, fps = last_tc
-                    Thread(target=post_event, args=('stop', tc, fps), daemon=True).start()
-                    on_status('idle', tc)
+                    post_event('stop', tc, fps)
 
             time.sleep(0.005)
 
-# ── GUI ───────────────────────────────────────────────────────────────────────
-def run_gui():
-    COLORS = {
-        'waiting': '#444444',
-        'idle':    '#f5a623',
-        'playing': '#4caf7d',
-        'error':   '#e05252',
-    }
-    STATUS_TEXT = {
-        'waiting': 'Buscando MIDI...',
-        'idle':    'PT listo',
-        'playing': 'PT corriendo',
-        'error':   'Error — sin puertos MIDI',
-    }
-
-    root = tk.Tk()
-    root.title('Notemaker MTC')
-    root.geometry('300x115')
-    root.resizable(False, False)
-    root.configure(bg='#0f0f0f')
-
-    # Dot
-    canvas = tk.Canvas(root, width=14, height=14, bg='#0f0f0f', highlightthickness=0)
-    dot = canvas.create_oval(1, 1, 13, 13, fill='#444444', outline='')
-    canvas.place(x=18, y=18)
-
-    # Status
-    status_var = tk.StringVar(value='Iniciando...')
-    tk.Label(root, textvariable=status_var, bg='#0f0f0f', fg='#888888',
-             font=('Helvetica', 11)).place(x=40, y=14)
-
-    # TC
-    tc_var = tk.StringVar(value='--:--:--:--')
-    tc_lbl = tk.Label(root, textvariable=tc_var, bg='#0f0f0f', fg='#f5a623',
-                      font=('Courier New', 30, 'bold'))
-    tc_lbl.place(x=14, y=42)
-
-    # URL
-    tk.Label(root, text=NOTEMAKER_URL.replace('https://', ''),
-             bg='#0f0f0f', fg='#333333', font=('Helvetica', 9)).place(x=18, y=94)
-
-    def on_status(state, tc):
-        color = COLORS.get(state, '#444444')
-        root.after(0, lambda: canvas.itemconfig(dot, fill=color))
-        root.after(0, lambda: status_var.set(STATUS_TEXT.get(state, state)))
-        root.after(0, lambda: tc_var.set(tc))
-        root.after(0, lambda: tc_lbl.configure(
-            fg='#4caf7d' if state == 'playing' else '#f5a623'))
-
-    Thread(target=run_emitter, args=(on_status,), daemon=True).start()
-    root.mainloop()
-
 if __name__ == '__main__':
-    run_gui()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nEmitter cerrado.')

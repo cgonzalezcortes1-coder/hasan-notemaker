@@ -459,6 +459,7 @@ textarea:focus { border-color: var(--amber); }
       <span class="sync-label">Play from:</span>
       <input type="text" id="sync-input" placeholder="01:05:32:14" maxlength="14">
       <button class="btn-sync" id="btn-sync" onclick="syncTC()">Save</button>
+      <button class="btn-sync" id="btn-sync-pt" onclick="syncFromPT()">↻ Sync PT</button>
       <span class="sync-status" id="sync-status"></span>
     </div>
     <div class="note-input-wrap">
@@ -817,6 +818,23 @@ async function generateFromLog() {
     dur: document.getElementById('l-dur').value, notes: logToText(),
     filename: document.getElementById('l-filename').value.trim() || 'notas'
   }, document.getElementById('status2'));
+}
+
+// ── Sync manual desde PT ──────────────────────────────────────────────────────
+async function syncFromPT() {
+  const btn = document.getElementById('btn-sync-pt');
+  try {
+    const res = await fetch('/tc');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    if (!data.tc) { btn.textContent = '✗ Sin datos'; setTimeout(() => btn.textContent = '↻ Sync PT', 2000); return; }
+    const parts = data.tc.split(':');
+    const h = parseInt(parts[0])||0, m = parseInt(parts[1])||0, s = parseInt(parts[2])||0;
+    const newElapsed = (h*3600 + m*60 + s)*1000 - getStartOffsetMs();
+    if (newElapsed >= 0) { elapsedMs = newElapsed; if (clockRunning) lastTick = Date.now(); }
+    btn.classList.add('synced'); btn.textContent = '✓ Synced';
+    setTimeout(() => { btn.classList.remove('synced'); btn.textContent = '↻ Sync PT'; }, 2000);
+  } catch(e) { btn.textContent = '✗ Error'; setTimeout(() => btn.textContent = '↻ Sync PT', 2000); }
 }
 
 // ── TC Sync (polling) ─────────────────────────────────────────────────────────
