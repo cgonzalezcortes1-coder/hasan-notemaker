@@ -852,6 +852,7 @@ async function pollTC() {
     if (newElapsed >= 0) { elapsedMs = newElapsed; if (clockRunning) lastTick = Date.now(); }
     if (data.event === 'play') startClock();
     else if (data.event === 'stop') stopClock();
+    else if (data.event === 'locate') document.getElementById('clock').textContent = msToTC(getStartOffsetMs() + elapsedMs);
   } catch(e) {}
 }
 setInterval(pollTC, 500);
