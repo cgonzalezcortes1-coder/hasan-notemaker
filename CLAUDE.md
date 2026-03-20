@@ -39,4 +39,32 @@ El AAF generado se importa a Pro Tools como regiones fantasma (ghost regions) co
 
 ## Deployment
 - **Vercel** — Flask serverless, `vercel.json` enruta todo a `api/index.py`
-- Feature pendiente: sincronización con Pro Tools via MIDI Timecode (MTC)
+
+## Sincronización TC remota (MTC → browsers)
+
+### Arquitectura implementada
+```
+Pro Tools → IAC Driver → mtc_emitter.py → POST /tc (Vercel KV)
+                                               ↑
+                              browsers polleando GET /tc cada 500ms
+```
+
+### Archivos
+- `mtc_emitter.py` — script local para el Mac del estudio. Deps: `mido python-rtmidi requests`
+- `api/index.py` — endpoints `GET /tc` y `POST /tc` usando Upstash/Vercel KV
+- `requirements.txt` — incluye `upstash-redis`
+
+### Flujo
+- **Play**: emitter detecta primer QF → POST `{event:"play", tc, fps}` → browsers arrancan reloj
+- **Stop**: emitter detecta ausencia de QF por 200ms → POST `{event:"stop", tc, fps}` → browsers paran y sincronizan TC
+- **Durante play**: sin POSTs continuos — browsers free-run desde el TC inicial
+
+### Requisitos de latencia (confirmados)
+- Play: llega la señal, desfase de décimas OK
+- Stop: hasta 2 segundos de latencia aceptable
+- TC post-stop: no tiene que ser inmediato
+
+### Setup inicial (una sola vez)
+1. Activar Vercel KV en el dashboard de Vercel → agrega `KV_REST_API_URL` y `KV_REST_API_TOKEN` automáticamente
+2. En el Mac del estudio: `pip install mido python-rtmidi requests`
+3. Correr: `NOTEMAKER_URL=https://tu-app.vercel.app python3 mtc_emitter.py`

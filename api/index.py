@@ -4,13 +4,20 @@ Notemaker — TC Logger + AAF Generator para Pro Tools.
 Vercel Serverless (Flask).
 """
 
-import re, struct, json, tempfile, os
+import re, struct, json, tempfile, os, time
 from fractions import Fraction
 from io import BytesIO
 from datetime import date
 
 import aaf2
 from flask import Flask, request, Response
+from upstash_redis import Redis
+
+def get_redis():
+    url   = os.environ.get('KV_REST_API_URL')
+    token = os.environ.get('KV_REST_API_TOKEN')
+    if not url or not token: return None
+    return Redis(url=url, token=token)
 
 SAMPLE_RATE = 48000
 EDIT_RATE   = Fraction(SAMPLE_RATE, 1)
@@ -312,6 +319,26 @@ textarea:focus { border-color: var(--amber); }
 .btn-sync:hover { color: var(--fg); border-color: #555; }
 .btn-sync.synced { background: var(--green); color: #000; border-color: var(--green); }
 .sync-status { font-family: var(--mono); font-size: 11px; color: var(--fg2); }
+
+/* MTC */
+.mtc-wrap {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.mtc-label { font-family: var(--mono); font-size: 10px; color: var(--fg2); text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; }
+.mtc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: #333; border: 1px solid #555; transition: background 0.2s; }
+.mtc-dot.live   { background: var(--green); border-color: var(--green); }
+.mtc-dot.idle   { background: var(--amber); border-color: var(--amber); }
+.mtc-dot.err    { background: var(--red);   border-color: var(--red); }
+.mtc-status { font-family: var(--mono); font-size: 11px; color: var(--fg2); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mtc-select {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
+  color: var(--fg); font-family: var(--mono); font-size: 12px;
+  padding: 6px 8px; outline: none; max-width: 200px; cursor: pointer;
+  appearance: none; -webkit-appearance: none; transition: border-color 0.15s;
+}
+.mtc-select:focus { border-color: var(--amber); }
+.mtc-select:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* Input de nota */
 .note-input-wrap {
@@ -792,6 +819,25 @@ async function generateFromLog() {
   }, document.getElementById('status2'));
 }
 
+// ── TC Sync (polling) ─────────────────────────────────────────────────────────
+let lastSyncTs = 0;
+async function pollTC() {
+  try {
+    const res = await fetch('/tc');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.ts || data.ts <= lastSyncTs) return;
+    lastSyncTs = data.ts;
+    const parts = (data.tc || '').split(':');
+    const h = parseInt(parts[0])||0, m = parseInt(parts[1])||0, s = parseInt(parts[2])||0;
+    const newElapsed = (h*3600 + m*60 + s)*1000 - getStartOffsetMs();
+    if (newElapsed >= 0) { elapsedMs = newElapsed; if (clockRunning) lastTick = Date.now(); }
+    if (data.event === 'play') startClock();
+    else if (data.event === 'stop') stopClock();
+  } catch(e) {}
+}
+setInterval(pollTC, 500);
+
 async function generateFromEditor() {
   const regions = await doGenerate({
     fps: document.getElementById('e-fps').value, start: document.getElementById('e-start').value,
@@ -852,6 +898,22 @@ def generate():
     resp.headers['X-Regions']                    = rjson
     resp.headers['Access-Control-Expose-Headers'] = 'X-Filename, X-Regions'
     return resp
+
+@app.route('/tc', methods=['GET'])
+def get_tc():
+    r = get_redis()
+    if not r: return Response('{}', mimetype='application/json')
+    val = r.get('tc')
+    return Response(val or '{}', mimetype='application/json')
+
+@app.route('/tc', methods=['POST'])
+def post_tc():
+    r = get_redis()
+    if not r: return Response('{}', mimetype='application/json')
+    body = request.get_json(force=True)
+    body['ts'] = time.time()
+    r.set('tc', json.dumps(body))
+    return Response('{}', mimetype='application/json')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8765)))
