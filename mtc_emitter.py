@@ -76,9 +76,7 @@ def main():
                         fps_type = (hh >> 5) & 0x03
                         hours    = hh & 0x1F
                         tc_str   = f'{hours:02d}:{mm:02d}:{ss:02d}:{ff:02d}'
-                        fps      = FPS_MAP.get(fps_type, '29.97')
-                        last_tc  = (tc_str, fps)
-                        post_event('locate', tc_str, fps)
+                        last_tc  = (tc_str, FPS_MAP.get(fps_type, '29.97'))
 
             if is_playing and (now - last_qf_time) > STOP_TIMEOUT:
                 is_playing = False
