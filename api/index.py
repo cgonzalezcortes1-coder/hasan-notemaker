@@ -831,7 +831,7 @@ async function syncFromPT() {
     const parts = data.tc.split(':');
     const h = parseInt(parts[0])||0, m = parseInt(parts[1])||0, s = parseInt(parts[2])||0;
     const newElapsed = (h*3600 + m*60 + s)*1000 - getStartOffsetMs();
-    if (newElapsed >= 0) { elapsedMs = newElapsed; if (clockRunning) lastTick = Date.now(); }
+    if (newElapsed >= 0) { elapsedMs = newElapsed; if (clockRunning) lastTick = Date.now(); document.getElementById('clock').textContent = msToTC(getStartOffsetMs() + elapsedMs); }
     btn.classList.add('synced'); btn.textContent = '✓ Synced';
     setTimeout(() => { btn.classList.remove('synced'); btn.textContent = '↻ Sync PT'; }, 2000);
   } catch(e) { btn.textContent = '✗ Error'; setTimeout(() => btn.textContent = '↻ Sync PT', 2000); }
