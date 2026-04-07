@@ -930,7 +930,9 @@ def get_tc():
     r = get_redis()
     if not r: return Response('{}', mimetype='application/json')
     val = r.get('tc')
-    return Response(val or '{}', mimetype='application/json')
+    resp = Response(val or '{}', mimetype='application/json')
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
 
 @app.route('/tc', methods=['POST'])
 def post_tc():
