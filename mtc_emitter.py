@@ -17,10 +17,11 @@ STOP_TIMEOUT  = 0.2
 FPS_MAP       = {0: '24', 1: '25', 2: '29.97', 3: '30'}
 
 # ── Estado MTC ────────────────────────────────────────────────────────────────
-mtc_qf       = [0] * 8
-last_qf_time = 0.0
-is_playing   = False
-last_tc      = None
+mtc_qf        = [0] * 8
+last_qf_time  = 0.0
+is_playing    = False
+last_tc       = None
+mtc_cycle_count = 0  # ciclos completos desde el último play
 
 def assemble_tc():
     frames   = mtc_qf[0] | ((mtc_qf[1] & 0x01) << 4)
@@ -61,13 +62,14 @@ def main():
                     mtc_qf[msg.frame_type] = msg.frame_value
                     last_qf_time = now
 
-                    if not is_playing:
-                        is_playing = True
-                        tc, fps = assemble_tc()
-                        post_event('play', tc, fps)
-
                     if msg.frame_type == 7:
                         last_tc = assemble_tc()
+                        if not is_playing:
+                            mtc_cycle_count += 1
+                            if mtc_cycle_count >= 2:
+                                is_playing = True
+                                mtc_cycle_count = 0
+                                post_event('play', last_tc[0], last_tc[1])
 
                 elif msg.type == 'sysex':
                     d = msg.data
@@ -78,8 +80,9 @@ def main():
                         tc_str   = f'{hours:02d}:{mm:02d}:{ss:02d}:{ff:02d}'
                         last_tc  = (tc_str, FPS_MAP.get(fps_type, '29.97'))
 
-            if is_playing and (now - last_qf_time) > STOP_TIMEOUT:
+            if (is_playing or mtc_cycle_count > 0) and (now - last_qf_time) > STOP_TIMEOUT:
                 is_playing = False
+                mtc_cycle_count = 0
                 if last_tc:
                     tc, fps = last_tc
                     post_event('stop', tc, fps)
