@@ -13,7 +13,7 @@ import time
 import sys
 
 NOTEMAKER_URL = 'https://notemaker.hasanestudio.net'
-STOP_TIMEOUT  = 0.2
+STOP_TIMEOUT  = 0.5
 FPS_MAP       = {0: '24', 1: '25', 2: '29.97', 3: '30'}
 
 # ── Estado MTC ────────────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ def post_event(event, tc, fps):
         print(f'Error POST: {e}')
 
 def main():
-    global is_playing, last_qf_time, last_tc
+    global is_playing, last_qf_time, last_tc, mtc_cycle_count
 
     ports = mido.get_input_names()
     if not ports:
