@@ -13,11 +13,15 @@ import aaf2
 from flask import Flask, request, Response
 from upstash_redis import Redis
 
+_redis_client = None
 def get_redis():
-    url   = os.environ.get('KV_REST_API_URL')
-    token = os.environ.get('KV_REST_API_TOKEN')
-    if not url or not token: return None
-    return Redis(url=url, token=token)
+    global _redis_client
+    if _redis_client is None:
+        url   = os.environ.get('KV_REST_API_URL')
+        token = os.environ.get('KV_REST_API_TOKEN')
+        if url and token:
+            _redis_client = Redis(url=url, token=token)
+    return _redis_client
 
 SAMPLE_RATE = 48000
 EDIT_RATE   = Fraction(SAMPLE_RATE, 1)
