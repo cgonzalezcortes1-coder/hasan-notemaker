@@ -568,6 +568,17 @@ textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,
 </div>
 
 <script>
+const UPSTASH_URL = '__UPSTASH_URL__';
+const UPSTASH_READ_TOKEN = '__UPSTASH_READ_TOKEN__';
+async function fetchTC() {
+  if (!UPSTASH_URL) return {};
+  const res = await fetch(UPSTASH_URL + '/get/tc', {
+    headers: { 'Authorization': 'Bearer ' + UPSTASH_READ_TOKEN }
+  });
+  if (!res.ok) return {};
+  const raw = await res.json();
+  return raw.result ? JSON.parse(raw.result) : {};
+}
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
@@ -836,9 +847,7 @@ async function generateFromLog() {
 async function syncFromPT() {
   const btn = document.getElementById('btn-sync-pt');
   try {
-    const res = await fetch('/tc');
-    if (!res.ok) throw new Error();
-    const data = await res.json();
+    const data = await fetchTC();
     if (!data.tc) { btn.textContent = '✗ Sin datos'; setTimeout(() => btn.textContent = '↻ Sync PT', 2000); return; }
     const parts = data.tc.split(':');
     const h = parseInt(parts[0])||0, m = parseInt(parts[1])||0, s = parseInt(parts[2])||0;
@@ -853,9 +862,7 @@ async function syncFromPT() {
 let lastSyncTs = 0;
 async function pollTC() {
   try {
-    const res = await fetch('/tc');
-    if (!res.ok) return;
-    const data = await res.json();
+    const data = await fetchTC();
     if (!data.ts || data.ts <= lastSyncTs) return;
     lastSyncTs = data.ts;
     const parts = (data.tc || '').split(':');
@@ -896,7 +903,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return Response(HTML, mimetype='text/html; charset=utf-8')
+    html = HTML.replace('__UPSTASH_URL__', os.environ.get('KV_REST_API_URL', '')) \
+               .replace('__UPSTASH_READ_TOKEN__', os.environ.get('KV_READ_TOKEN', ''))
+    return Response(html, mimetype='text/html; charset=utf-8')
 
 @app.route('/generate', methods=['POST'])
 def generate():
