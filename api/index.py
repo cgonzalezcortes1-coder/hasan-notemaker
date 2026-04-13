@@ -866,7 +866,12 @@ async function pollTC() {
     else if (data.event === 'stop') stopClock();
   } catch(e) {}
 }
-setInterval(pollTC, 500);
+(async function pollLoop() {
+  while (true) {
+    await pollTC();
+    await new Promise(r => setTimeout(r, 500));
+  }
+})();
 
 async function generateFromEditor() {
   const regions = await doGenerate({
