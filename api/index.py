@@ -159,10 +159,10 @@ HTML = r"""<!DOCTYPE html>
   --bg:          #F6F4F0;
   --surface:     #FFFFFF;
   --border:      #E4E4E4;
-  --border-soft: rgba(245,166,35,0.18);
-  --amber:       #F5A623;
-  --amber2:      #D9880A;
-  --amber-pale:  #FEF5E7;
+  --border-soft: rgba(255,122,32,0.18);
+  --amber:       #ff7a20;
+  --amber2:      #b4580e;
+  --amber-pale:  #fef0e7;
   --fg:          #1C1C1C;
   --fg2:         #8A8A8A;
   --green:       #4caf7d;
@@ -235,7 +235,7 @@ header span { font-size: 12px; color: var(--fg2); font-weight: 300; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A8A8A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer;
 }
-.field select:focus, .field input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,35,0.12); }
+.field select:focus, .field input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255,122,32,0.12); }
 .field-full { margin-bottom: 12px; }
 .field-full input {
   width: 100%; background: var(--surface); border: 1.5px solid var(--border);
@@ -243,7 +243,7 @@ header span { font-size: 12px; color: var(--fg2); font-weight: 300; }
   font-size: 14px; padding: 8px 10px; outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.field-full input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,35,0.12); }
+.field-full input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255,122,32,0.12); }
 
 /* Textarea */
 textarea {
@@ -253,7 +253,7 @@ textarea {
   resize: vertical; min-height: 200px; outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,35,0.12); }
+textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255,122,32,0.12); }
 .hint { font-size: 11px; color: var(--fg2); font-family: var(--mono); margin-top: 9px; line-height: 2; }
 .hint code { color: var(--amber2); background: var(--amber-pale); padding: 1px 5px; border-radius: 4px; }
 
@@ -284,7 +284,7 @@ textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,
 }
 .btn:active { transform: scale(0.97); }
 .btn:disabled { background: var(--border) !important; color: var(--fg2) !important; cursor: not-allowed; transform: none; }
-.btn-primary { background: var(--amber); color: #fff; box-shadow: 0 3px 10px rgba(245,166,35,0.3); }
+.btn-primary { background: var(--amber); color: #fff; box-shadow: 0 3px 10px rgba(255,122,32,0.3); }
 .btn-primary:hover:not(:disabled) { background: var(--amber2); }
 .btn-pdf { background: var(--surface); color: var(--fg2); border: 1.5px solid var(--border); }
 .btn-pdf:hover:not(:disabled) { color: var(--fg); border-color: #bbb; }
@@ -321,7 +321,7 @@ textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,
   padding: 7px 10px; outline: none; width: 130px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.sync-wrap input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,35,0.12); }
+.sync-wrap input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255,122,32,0.12); }
 .btn-sync {
   background: var(--surface); color: var(--fg2); border: 1.5px solid var(--border);
   border-radius: 7px; font-family: var(--sans); font-size: 12px; font-weight: 500;
@@ -363,7 +363,7 @@ textarea:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 @media (max-width: 480px) { .note-input-wrap input { font-size: 16px; } }
-.note-input-wrap input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,166,35,0.12); }
+.note-input-wrap input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255,122,32,0.12); }
 .note-input-wrap input:disabled { opacity: 0.4; background: var(--bg); }
 
 /* Botón capturar TC */
